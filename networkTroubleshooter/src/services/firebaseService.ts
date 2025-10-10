@@ -1,6 +1,6 @@
 import { db } from '../firebase/config';
 import { collection, addDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
-import { NetworkProblem } from './aiService';
+import type { NetworkProblem } from './aiService';
 
 export class FirebaseService {
   async saveProblem(problem: string, solutions: string[]): Promise<void> {
