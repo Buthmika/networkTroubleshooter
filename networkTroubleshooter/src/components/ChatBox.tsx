@@ -3,9 +3,10 @@ import { AITroubleshooter } from '../services/aiService';
 
 interface ChatBoxProps {
   onNewProblem: (problem: string, solutions: string[]) => void;
+  isAiThinking?: boolean;
 }
 
-export const ChatBox: React.FC<ChatBoxProps> = ({ onNewProblem }) => {
+export const ChatBox: React.FC<ChatBoxProps> = ({ onNewProblem, isAiThinking = false }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const aiTroubleshooter = new AITroubleshooter();
@@ -28,8 +29,15 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ onNewProblem }) => {
 
   return (
     <div className="chat-box">
-      <h2>🔧 What's Your Network Problem?</h2>
-      <p>Tell me what's wrong and I'll help you fix it!</p>
+      <div className="ai-chat-header">
+        <div className="ai-assistant">
+          <span className="ai-avatar">🤖</span>
+          <div className="ai-info">
+            <h2>AI Network Assistant</h2>
+            <p>Describe your problem and I'll analyze it instantly!</p>
+          </div>
+        </div>
+      </div>
       
       <form onSubmit={handleSubmit}>
         <textarea
@@ -39,8 +47,8 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ onNewProblem }) => {
           rows={4}
           disabled={isLoading}
         />
-        <button type="submit" disabled={isLoading || !input.trim()}>
-          {isLoading ? '🔍 Finding Solutions...' : '🚀 Get Help Now!'}
+        <button type="submit" disabled={isLoading || !input.trim() || isAiThinking}>
+          {isLoading || isAiThinking ? '🤖 AI Analyzing...' : '🚀 Ask AI Assistant'}
         </button>
       </form>
     </div>
