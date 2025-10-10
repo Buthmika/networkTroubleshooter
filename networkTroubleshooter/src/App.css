@@ -1,42 +1,190 @@
-#root {
-  max-width: 1280px;
+.App {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+}
+
+header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2.5em;
+}
+
+header p {
+  margin: 0;
+  font-size: 1.2em;
+  opacity: 0.9;
+}
+
+.chat-box {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border: 1px solid #e1e8ed;
+}
+
+.chat-box h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.chat-box p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.chat-box textarea {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e1e8ed;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+  transition: border-color 0.3s;
+}
+
+.chat-box textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.chat-box button {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.chat-box button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.chat-box button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.solution-card {
+  background: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
+
+.solution-card:hover {
+  transform: translateY(-2px);
+}
+
+.problem-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f0f4f8;
+  padding-bottom: 15px;
+}
+
+.problem-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.timestamp {
+  color: #888;
+  font-size: 14px;
+  background: #f8f9fa;
+  padding: 5px 10px;
+  border-radius: 20px;
+}
+
+.solutions h4 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.solution-item {
+  margin-bottom: 12px;
+  padding: 12px 15px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.current-solution {
+  margin-bottom: 30px;
+}
+
+.current-solution h2 {
+  color: #333;
+  margin-bottom: 15px;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.history {
+  margin-top: 40px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.history h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .App {
+    padding: 15px;
   }
-  to {
-    transform: rotate(360deg);
+  
+  header {
+    padding: 20px;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  
+  header h1 {
+    font-size: 2em;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+  
+  .problem-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .chat-box {
+    padding: 20px;
+  }
+  
+  .solution-card {
+    padding: 20px;
+  }
 }
