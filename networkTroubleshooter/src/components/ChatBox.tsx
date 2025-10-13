@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { AITroubleshooter } from '../services/aiService';
 
 interface ChatBoxProps {
-  onNewProblem: (problem: string, solutions: string[]) => void;
+  onNewProblem: (problem: string) => void;
   isAiThinking?: boolean;
 }
 
 export const ChatBox: React.FC<ChatBoxProps> = ({ onNewProblem, isAiThinking = false }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const aiTroubleshooter = new AITroubleshooter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,11 +15,8 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ onNewProblem, isAiThinking = f
 
     setIsLoading(true);
     
-    // Get AI solutions
-    const solutions = aiTroubleshooter.analyzeProblem(input);
-    
-    // Send to parent component  
-    onNewProblem(input, solutions);
+    // Send problem to parent component for intelligent AI analysis
+    onNewProblem(input);
     
     setInput('');
     setIsLoading(false);
