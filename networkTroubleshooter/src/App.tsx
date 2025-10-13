@@ -21,21 +21,29 @@ function App() {
     setHistory(historyData);
   };
 
-  const handleNewProblem = async (problem: string, solutions: string[]) => {
+  const handleNewProblem = async (problem: string) => {
     // Show AI thinking animation
     setIsAiThinking(true);
     
-    // Simulate AI confidence calculation
-    const confidence = Math.floor(Math.random() * 20) + 80; // 80-100%
-    setAiConfidence(confidence);
+    // Import and use the intelligent AI
+    const { AITroubleshooter } = await import('./services/aiService');
+    const aiTroubleshooter = new AITroubleshooter();
     
-    // Add slight delay for AI effect
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Add delay to show AI thinking process
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Get intelligent AI analysis
+    const aiAnalysis = aiTroubleshooter.analyzeIntelligently(problem);
+    
+    setAiConfidence(aiAnalysis.confidence);
     
     const newProblem: NetworkProblem = {
       id: Date.now().toString(),
       problem,
-      solutions,
+      solutions: aiAnalysis.solutions,
+      aiReasoning: aiAnalysis.reasoning,
+      confidence: aiAnalysis.confidence,
+      followUpQuestions: aiAnalysis.followUpQuestions,
       timestamp: new Date()
     };
 
@@ -43,7 +51,7 @@ function App() {
     setIsAiThinking(false);
     
     // Save to Firebase (comment out if Firebase not setup yet)
-    // await firebaseService.saveProblem(problem, solutions);
+    // await firebaseService.saveProblem(problem, aiAnalysis.solutions);
     
     // Refresh history
     // loadHistory();
@@ -101,6 +109,8 @@ function App() {
               problem={currentSolution.problem}
               solutions={currentSolution.solutions}
               timestamp={currentSolution.timestamp}
+              aiReasoning={currentSolution.aiReasoning}
+              followUpQuestions={currentSolution.followUpQuestions}
             />
           </div>
         )}
