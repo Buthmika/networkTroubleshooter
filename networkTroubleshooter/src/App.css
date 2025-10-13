@@ -401,6 +401,80 @@ header p {
   box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
 }
 
+/* AI Reasoning Section */
+.ai-reasoning {
+  background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+  border: 2px solid #4CAF50;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.ai-reasoning h4 {
+  color: #2E7D32;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.reasoning-content p {
+  margin: 8px 0;
+  line-height: 1.6;
+  color: #333;
+}
+
+.reasoning-content p:first-child {
+  font-weight: 600;
+  color: #2E7D32;
+}
+
+/* Follow-up Questions */
+.follow-up-questions {
+  background: linear-gradient(135deg, #fff3e0, #fff8f0);
+  border: 2px solid #FF9800;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.follow-up-questions h4 {
+  color: #F57C00;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.questions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 15px 0;
+}
+
+.question-item {
+  background: rgba(255, 152, 0, 0.1);
+  padding: 12px 15px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border-left: 4px solid #FF9800;
+  color: #333;
+  font-size: 15px;
+}
+
+.questions-note {
+  margin: 0;
+  font-size: 14px;
+  color: #F57C00;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Enhanced Solution Items */
+.solutions h4 {
+  background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 1.3rem;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .App {
