@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', 'Inter', 'Roboto', 'Arial Rounded MT Bold', Arial, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
 }
@@ -408,18 +408,24 @@ header p {
   border-radius: 15px;
   padding: 20px;
   margin: 20px 0;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 600;
 }
 
 .ai-reasoning h4 {
   color: #2E7D32;
   margin-bottom: 15px;
   font-size: 1.2rem;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 700;
 }
 
 .reasoning-content p {
   margin: 8px 0;
   line-height: 1.6;
   color: #333;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 600;
 }
 
 .reasoning-content p:first-child {
@@ -434,12 +440,16 @@ header p {
   border-radius: 15px;
   padding: 20px;
   margin: 20px 0;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 600;
 }
 
 .follow-up-questions h4 {
   color: #F57C00;
   margin-bottom: 15px;
   font-size: 1.2rem;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 700;
 }
 
 .questions-list {
@@ -456,6 +466,8 @@ header p {
   border-left: 4px solid #FF9800;
   color: #333;
   font-size: 15px;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 600;
 }
 
 .questions-note {
@@ -473,6 +485,8 @@ header p {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-size: 1.3rem;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 700;
 }
 
 /* Mobile Responsive */
