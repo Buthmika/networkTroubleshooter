@@ -32,18 +32,18 @@ function App() {
     // Add delay to show AI thinking process
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Get intelligent AI analysis
-    const aiAnalysis = aiTroubleshooter.analyzeIntelligently(problem);
-    
-    setAiConfidence(aiAnalysis.confidence);
+  // Get intelligent AI analysis (await async result)
+  const aiAnalysis = await aiTroubleshooter.analyzeIntelligently(problem);
+
+  setAiConfidence(aiAnalysis.confidence ?? 75);
     
     const newProblem: NetworkProblem = {
       id: Date.now().toString(),
       problem,
-      solutions: aiAnalysis.solutions,
-      aiReasoning: aiAnalysis.reasoning,
-      confidence: aiAnalysis.confidence,
-      followUpQuestions: aiAnalysis.followUpQuestions,
+  solutions: aiAnalysis.solutions,
+  aiReasoning: aiAnalysis.reasoning,
+  confidence: aiAnalysis.confidence,
+  followUpQuestions: aiAnalysis.followUpQuestions,
       timestamp: new Date()
     };
 
