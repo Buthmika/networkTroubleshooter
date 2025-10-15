@@ -165,27 +165,35 @@ export class AITroubleshooter {
     }
   ];
 
-  // Main AI analysis method that thinks and reasons
-  analyzeIntelligently(userInput: string): AIAnalysis {
+  // Main AI analysis method that thinks and reasons (async)
+  async analyzeIntelligently(userInput: string): Promise<AIAnalysis> {
     console.log('🤖 AI is analyzing:', userInput);
-    
+
+    // Try remote AI (OpenAI) first if a key is available (optional). If no key or the call fails, fall back to local reasoning.
+    try {
+      const openAiResult = await this.callOpenAIIfAvailable(userInput);
+      if (openAiResult) return openAiResult;
+    } catch (err) {
+      console.warn('OpenAI call failed, falling back to local AI:', err);
+    }
+
     // Step 1: Parse and understand the problem
     const analysis = this.parseUserInput(userInput);
     const detectedIssues = this.identifyIssues(userInput);
     const deviceContext = this.detectDevice(userInput);
-    
+
     // Step 2: AI reasoning process
     const reasoning = this.generateReasoning(analysis, detectedIssues, deviceContext);
-    
+
     // Step 3: Generate dynamic solutions
     const solutions = this.generateSmartSolutions(detectedIssues, deviceContext, userInput);
-    
+
     // Step 4: Calculate confidence based on analysis
     const confidence = this.calculateConfidence(analysis, detectedIssues);
-    
+
     // Step 5: Generate follow-up questions
     const followUpQuestions = this.generateFollowUpQuestions(detectedIssues, analysis);
-    
+
     return {
       solutions,
       reasoning,
@@ -195,9 +203,70 @@ export class AITroubleshooter {
     };
   }
 
-  // Legacy method for backward compatibility
-  analyzeProblem(userInput: string): string[] {
-    return this.analyzeIntelligently(userInput).solutions;
+  // Legacy method for backward compatibility (returns a promise)
+  async analyzeProblem(userInput: string): Promise<string[]> {
+    return (await this.analyzeIntelligently(userInput)).solutions;
+  }
+
+  // Optional OpenAI integration (client-side). Set VITE_OPENAI_KEY in your .env to enable.
+  private async callOpenAIIfAvailable(userInput: string): Promise<AIAnalysis | null> {
+    try {
+      // Access Vite env in the browser build
+  const env: any = (typeof import.meta !== 'undefined' ? (import.meta as any).env : {});
+  const key = env?.VITE_OPENAI_KEY || env?.OPENAI_API_KEY || env?.REACT_APP_OPENAI_KEY;
+      if (!key) return null;
+
+      const systemPrompt = `You are a helpful network troubleshooting assistant. When given a user's problem, return a JSON object with fields: solutions (array of short, practical step-by-step actions), reasoning (short plain-text explanation), confidence (number 0-100), followUpQuestions (array of up to 3 questions), detectedIssues (array of short tags). Only return valid JSON. Keep steps practical, numbered or short sentences.`;
+
+      const userPrompt = `Problem: "${userInput}"\n\nRespond only with JSON matching the schema: {"solutions": [..], "reasoning": "..", "confidence": <number>, "followUpQuestions": [..], "detectedIssues": [..] }`;
+
+      const body = {
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        max_tokens: 500,
+        temperature: 0.2
+      };
+
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${key}`
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        console.warn('OpenAI response not ok', await res.text());
+        return null;
+      }
+
+      const data = await res.json();
+      const content = data?.choices?.[0]?.message?.content;
+      if (!content) return null;
+
+      // Some models return code fences; try to extract JSON
+      const jsonTextMatch = content.match(/\{[\s\S]*\}/);
+      const jsonText = jsonTextMatch ? jsonTextMatch[0] : content;
+      const parsed = JSON.parse(jsonText);
+
+      // Basic normalization/validation
+      const result: AIAnalysis = {
+        solutions: Array.isArray(parsed.solutions) ? parsed.solutions : [],
+        reasoning: parsed.reasoning || parsed.explanation || '',
+        confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 75,
+        followUpQuestions: Array.isArray(parsed.followUpQuestions) ? parsed.followUpQuestions : [],
+        detectedIssues: Array.isArray(parsed.detectedIssues) ? parsed.detectedIssues : []
+      };
+
+      return result;
+    } catch (err) {
+      console.warn('OpenAI integration error:', err);
+      return null;
+    }
   }
 
   private parseUserInput(input: string): any {
@@ -269,50 +338,50 @@ export class AITroubleshooter {
       switch (issue) {
         case 'performance':
           solutions.push(
-            `🔄 **Restart Network Equipment** - This fixes 85% of speed issues`,
-            `📊 **Run Speed Test** - Let's measure your actual vs expected speeds`,
-            `📱 **Check Background Apps** - Close bandwidth-heavy applications`,
+            `1) 🔄 Power-cycle your modem and router: unplug both devices for 30 seconds, then plug modem back in, wait 60 seconds, then plug router back in.`,
+            `2) 📊 Run an internet speed test (speedtest.net) on the affected device and compare to your plan.`,
+            `3) 📱 Close apps or downloads consuming bandwidth (torrent clients, cloud backups, streaming).`,
             device === 'mobile' ? 
-              `📶 **Switch to WiFi** - Mobile data might be throttled` :
-              `🔌 **Try Ethernet Connection** - More stable than WiFi for ${device}`
+              `4) 📶 Move closer to router or try the same test on another device to see if issue is device-specific.` :
+              `4) 🔌 Connect the device with an Ethernet cable and test again to isolate WiFi vs ISP issues.`
           );
           break;
           
         case 'connection_failure':
           solutions.push(
-            `🔑 **Verify WiFi Credentials** - Double-check network name and password`,
-            `📍 **Check Signal Strength** - Move closer to router temporarily`,
-            `🔄 **Reset Network Settings** - Clear corrupted network configurations`,
+            `1) � Verify the exact WiFi network name (SSID) and re-enter the password carefully (case-sensitive).`,
+            `2) � On the device, check WiFi scan list: can you SEE the network? If not, try restarting the router.`,
+            `3) 🔄 Forget the network on the device and re-add it (Settings → WiFi → Forget → Reconnect).`,
             device === 'mobile' ?
-              `✈️ **Toggle Airplane Mode** - Refreshes mobile network connections` :
-              `💻 **Update Network Drivers** - Outdated drivers cause connection issues`
+              `4) ✈️ Toggle Airplane Mode for 10s then reconnect (this refreshes radios).` :
+              `4) 💻 Update or reinstall network drivers (Device Manager → Network adapters → Update driver).`
           );
           break;
           
         case 'streaming_issues':
           const streamingSolution = currentTime > 18 || currentTime < 9 ?
-            '⏰ **Peak Hours Detected** - Try lowering video quality during busy times' :
-            '🚀 **Optimize Streaming** - Use ethernet and close other apps';
+            '1) ⏰ Peak hours likely — lower video quality to 480p or 720p.' :
+            '1) 🚀 Use Ethernet or ensure strong WiFi signal (one meter away from router for testing).';
           solutions.push(
             streamingSolution,
-            `📺 **Restart Streaming Device** - Clears memory and connection cache`,
-            `🌐 **Test Different Server** - Try different Netflix/YouTube regions`
+            `2) 📺 Restart the streaming app and device, sign out and back into the service.`,
+            `3) ⏸️ Pause other devices or downloads and rerun the stream test.`
           );
           break;
           
         case 'video_call_issues':
           solutions.push(
-            `💻 **Prioritize Video Calls** - Use ethernet and close other apps`,
-            `🎥 **Adjust Call Quality** - Lower video resolution if needed`,
-            `⚙️ **Update Calling App** - Latest versions have better compression`
+            `1) 💻 Switch to Ethernet and close background apps; if not possible, move closer to router.`,
+            `2) 🎥 Lower call resolution or disable your video to improve audio stability.`,
+            `3) ⚙️ Update or reinstall the calling app, and test in a different meeting to isolate service issues.`
           );
           break;
           
         default:
           solutions.push(
-            `🔧 **Smart Diagnostic** - I've analyzed your specific "${originalInput}" issue`,
-            `🎯 **Targeted Solution** - This approach works best for your situation`,
-            `📞 **Expert Backup** - Contact support if this doesn't resolve it`
+            `1) 🔧 Smart Diagnostic: I analyzed your input "${originalInput}" and recommend these step-by-step checks.`,
+            `2) 📋 Check router lights (power, internet/online, WAN/DSL) and confirm cables are firmly connected.`,
+            `3) 📞 If steps fail, collect router model and ISP contact info and contact support.`
           );
       }
     }
@@ -333,7 +402,7 @@ export class AITroubleshooter {
     return Math.min(confidence, 98); // Cap at 98%
   }
 
-  private generateFollowUpQuestions(issues: string[], analysis: any): string[] {
+  private generateFollowUpQuestions(issues: string[], _analysis: any): string[] {
     const questions = [];
     
     if (issues.includes('performance')) {
