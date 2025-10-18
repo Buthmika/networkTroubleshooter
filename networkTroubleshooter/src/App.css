@@ -204,6 +204,29 @@ header p {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.voice-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.mic-button {
+  background: linear-gradient(135deg, #ff6b6b, #ff4757);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 18px;
+  height: 56px;
+}
+
+.mic-button.recording {
+  background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+  box-shadow: 0 8px 30px rgba(0,210,255,0.25);
+}
+
 .chat-box button {
   background: linear-gradient(135deg, #00d2ff, #3a7bd5);
   color: white;
