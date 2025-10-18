@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface ChatBoxProps {
   onNewProblem: (problem: string) => void;
@@ -8,6 +8,53 @@ interface ChatBoxProps {
 export const ChatBox: React.FC<ChatBoxProps> = ({ onNewProblem, isAiThinking = false }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    // Setup Web Speech API (SpeechRecognition)
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    const recog = new SpeechRecognition();
+    recog.lang = 'en-US';
+    recog.interimResults = true;
+    recog.maxAlternatives = 1;
+
+    recog.onresult = (event: any) => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(prev => (prev ? prev + ' ' : '') + transcript);
+    };
+
+    recog.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognitionRef.current = recog;
+  }, []);
+
+  const toggleRecording = () => {
+    const recog = recognitionRef.current;
+    if (!recog) {
+      alert('Speech recognition is not supported in this browser. Try Chrome or Edge.');
+      return;
+    }
+
+    if (isRecording) {
+      recog.stop();
+      setIsRecording(false);
+    } else {
+      try {
+        recog.start();
+        setIsRecording(true);
+      } catch (err) {
+        console.warn('Speech recognition start error', err);
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,13 +82,18 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ onNewProblem, isAiThinking = f
       </div>
       
       <form onSubmit={handleSubmit}>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Example: My WiFi is connected but I have no internet..."
-          rows={4}
-          disabled={isLoading}
-        />
+        <div className="voice-row">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Example: My WiFi is connected but I have no internet..."
+            rows={4}
+            disabled={isLoading}
+          />
+          <button type="button" className={`mic-button ${isRecording ? 'recording' : ''}`} onClick={toggleRecording} title="Toggle voice typing">
+            {isRecording ? '🎙️ Recording...' : '🎤'}
+          </button>
+        </div>
         <button type="submit" disabled={isLoading || !input.trim() || isAiThinking}>
           {isLoading || isAiThinking ? '🤖 AI Analyzing...' : '🚀 Ask AI Assistant'}
         </button>
