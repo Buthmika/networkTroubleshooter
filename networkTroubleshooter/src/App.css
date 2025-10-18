@@ -3,19 +3,17 @@
   padding: 0;
   box-sizing: border-box;
 }
-
-body {
-  font-family: 'Segoe UI', 'Inter', 'Roboto', 'Arial Rounded MT Bold', Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
 body {
   font-family: 'Segoe UI', 'Inter', 'Roboto', 'Arial Rounded MT Bold', Arial, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   font-size: 18px; /* increased base font size for readability */
 }
+
+/* gentle pulse used by header icon */
+@keyframes pulse {
   0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.7; }
+  50% { transform: scale(1.06); opacity: 0.8; }
   100% { transform: scale(1); opacity: 1; }
 }
 
@@ -208,23 +206,67 @@ header p {
   display: flex;
   gap: 12px;
   align-items: flex-start;
+  /* Make input area take available width while mic stays compact */
+}
+.voice-row {
+  align-items: center; /* vertically center textarea and mic */
 }
 
+.voice-row textarea {
+  flex: 1; /* allow textarea to grow and fill space */
+}
+
+/* Modern circular mic button */
 .mic-button {
-  background: linear-gradient(135deg, #ff6b6b, #ff4757);
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4a4ef6, #6b6bff);
   color: white;
   border: none;
-  border-radius: 12px;
-  padding: 12px 14px;
   cursor: pointer;
   font-weight: 800;
-  font-size: 18px;
-  height: 56px;
+  font-size: 20px;
+  box-shadow: 0 6px 18px rgba(75, 75, 250, 0.18);
+  transition: transform 150ms ease, box-shadow 150ms ease, background 200ms ease;
+  position: relative; /* needed so the ::after pulse is positioned correctly */
 }
 
+.mic-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(75, 75, 250, 0.22);
+}
+
+.mic-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 6px rgba(106, 106, 255, 0.12);
+}
+
+/* Recording state with subtle pulse ring */
 .mic-button.recording {
-  background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-  box-shadow: 0 8px 30px rgba(0,210,255,0.25);
+  background: linear-gradient(135deg, #ff5d5d, #ff7b7b);
+  box-shadow: 0 10px 30px rgba(255, 93, 93, 0.18);
+}
+
+.mic-button.recording::after {
+  content: '';
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(255,93,93,0.10), rgba(255,93,93,0.02));
+  animation: mic-pulse 1.6s ease-out infinite;
+  z-index: -1;
+}
+
+@keyframes mic-pulse {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  70% { transform: scale(1.25); opacity: 0.15; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
 .chat-box button {
