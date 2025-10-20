@@ -82,18 +82,31 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ onNewProblem, isAiThinking = f
       </div>
       
       <form onSubmit={handleSubmit}>
-        <div className="voice-row">
+        <div className="input-with-mic">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Example: My WiFi is connected but I have no internet..."
             rows={4}
             disabled={isLoading}
+            aria-label="Describe your network problem"
           />
-          <button type="button" className={`mic-button ${isRecording ? 'recording' : ''}`} onClick={toggleRecording} title="Toggle voice typing">
-            {isRecording ? '🎙️ Recording...' : '🎤'}
+          <button
+            type="button"
+            className={`mic-button ${isRecording ? 'recording' : ''}`}
+            onClick={toggleRecording}
+            title="Toggle voice typing"
+            aria-pressed={isRecording}
+            aria-label={isRecording ? 'Stop voice typing' : 'Start voice typing'}
+          >
+            <svg className="mic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M19 11v1a7 7 0 0 1-14 0v-1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M12 19v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
         </div>
+
         <button type="submit" disabled={isLoading || !input.trim() || isAiThinking}>
           {isLoading || isAiThinking ? '🤖 AI Analyzing...' : '🚀 Ask AI Assistant'}
         </button>
