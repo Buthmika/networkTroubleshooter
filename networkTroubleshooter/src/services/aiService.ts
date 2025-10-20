@@ -4,17 +4,19 @@ export interface NetworkProblem {
   id: string;
   problem: string;
   solutions: string[];
-  aiReasoning: string;
   confidence: number;
-  followUpQuestions: string[];
+  // removed detailed AI reasoning text per user request
+  aiReasoning?: string;
+  followUpQuestions?: string[];
   timestamp: Date;
 }
 
 export interface AIAnalysis {
   solutions: string[];
-  reasoning: string;
+  // optional reasoning (kept for internal use but not displayed by UI)
+  reasoning?: string;
   confidence: number;
-  followUpQuestions: string[];
+  followUpQuestions?: string[];
   detectedIssues: string[];
 }
 
@@ -169,40 +171,29 @@ export class AITroubleshooter {
 
   // Main AI analysis method that thinks and reasons (async)
   async analyzeIntelligently(userInput: string): Promise<AIAnalysis> {
-    console.log('🤖 AI is analyzing:', userInput);
+    // Strict API-only flow: call server proxy /api/ai which returns structured JSON
+    const res = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ problem: userInput })
+    });
 
-    // Try remote AI (OpenAI) first if a key is available (optional). If no key or the call fails, fall back to local reasoning.
-    try {
-      const openAiResult = await this.callOpenAIIfAvailable(userInput);
-      if (openAiResult) return openAiResult;
-    } catch (err) {
-      console.warn('OpenAI call failed, falling back to local AI:', err);
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`AI API error: ${res.status} ${res.statusText} - ${text}`);
     }
 
-    // Step 1: Parse and understand the problem
-    const analysis = this.parseUserInput(userInput);
-    const detectedIssues = this.identifyIssues(userInput);
-    const deviceContext = this.detectDevice(userInput);
+    const parsed = await res.json();
 
-    // Step 2: AI reasoning process
-    const reasoning = this.generateReasoning(analysis, detectedIssues, deviceContext);
-
-    // Step 3: Generate dynamic solutions
-    const solutions = this.generateSmartSolutions(detectedIssues, deviceContext, userInput);
-
-    // Step 4: Calculate confidence based on analysis
-    const confidence = this.calculateConfidence(analysis, detectedIssues);
-
-    // Step 5: Generate follow-up questions
-    const followUpQuestions = this.generateFollowUpQuestions(detectedIssues, analysis);
-
-    return {
-      solutions,
-      reasoning,
-      confidence,
-      followUpQuestions,
-      detectedIssues
+    const result: AIAnalysis = {
+      solutions: Array.isArray(parsed.solutions) ? parsed.solutions : [],
+      reasoning: parsed.reasoning || parsed.explanation || undefined,
+      confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 75,
+      followUpQuestions: Array.isArray(parsed.followUpQuestions) ? parsed.followUpQuestions : undefined,
+      detectedIssues: Array.isArray(parsed.detectedIssues) ? parsed.detectedIssues : []
     };
+
+    return result;
   }
 
   // Legacy method for backward compatibility (returns a promise)
