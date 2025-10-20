@@ -195,6 +195,31 @@ header p {
   background: #f8f9fa;
 }
 
+/* Container for textarea with mic overlay */
+.input-with-mic {
+  position: relative;
+}
+
+.input-with-mic textarea {
+  padding-right: 78px; /* room for mic */
+}
+
+.mic-button {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mic-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
 .chat-box textarea:focus {
   outline: none;
   border-color: #667eea;
