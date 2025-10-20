@@ -40,10 +40,8 @@ function App() {
     const newProblem: NetworkProblem = {
       id: Date.now().toString(),
       problem,
-  solutions: aiAnalysis.solutions,
-  aiReasoning: aiAnalysis.reasoning,
-  confidence: aiAnalysis.confidence,
-  followUpQuestions: aiAnalysis.followUpQuestions,
+      solutions: aiAnalysis.solutions,
+      confidence: aiAnalysis.confidence,
       timestamp: new Date()
     };
 
@@ -109,8 +107,6 @@ function App() {
               problem={currentSolution.problem}
               solutions={currentSolution.solutions}
               timestamp={currentSolution.timestamp}
-              aiReasoning={currentSolution.aiReasoning}
-              followUpQuestions={currentSolution.followUpQuestions}
             />
           </div>
         )}
