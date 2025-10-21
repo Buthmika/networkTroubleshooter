@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ChatBox } from './components/ChatBox';
 import { SolutionCard } from './components/SolutionCard';
 import { FirebaseService } from './services/firebaseService';
@@ -10,6 +10,7 @@ function App() {
   const [history, setHistory] = useState<NetworkProblem[]>([]);
   const [isAiThinking, setIsAiThinking] = useState(false);
   const [aiConfidence, setAiConfidence] = useState(0);
+  const [apiError, setApiError] = useState<string | null>(null);
   const firebaseService = new FirebaseService();
 
   useEffect(() => {
@@ -33,10 +34,10 @@ function App() {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
   // Get intelligent AI analysis (await async result)
-  const aiAnalysis = await aiTroubleshooter.analyzeIntelligently(problem);
+  try {
+    const aiAnalysis = await aiTroubleshooter.analyzeIntelligently(problem);
+    setAiConfidence(aiAnalysis.confidence ?? 75);
 
-  setAiConfidence(aiAnalysis.confidence ?? 75);
-    
     const newProblem: NetworkProblem = {
       id: Date.now().toString(),
       problem,
@@ -46,6 +47,14 @@ function App() {
     };
 
     setCurrentSolution(newProblem);
+    setApiError(null);
+  } catch (err: any) {
+    console.error('AI API error', err);
+    setApiError(err?.message || 'AI API failed');
+    setIsAiThinking(false);
+    return;
+  }
+  
     setIsAiThinking(false);
     
     // Save to Firebase (comment out if Firebase not setup yet)
@@ -73,6 +82,11 @@ function App() {
       </header>
 
       <main>
+        {apiError && (
+          <div style={{background: '#ffe6e6', padding: '12px', borderRadius: 8, marginBottom: 16, color: '#b00020'}}>
+            <strong>AI API Error:</strong> {apiError}
+          </div>
+        )}
         <ChatBox onNewProblem={handleNewProblem} isAiThinking={isAiThinking} />
         
         {isAiThinking && (
